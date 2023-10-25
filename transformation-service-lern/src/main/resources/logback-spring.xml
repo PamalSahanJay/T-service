@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <springProperty name="maxFileSize" source="logback.rollingPolicy.maxFileSize.mb" defaultValue="2GB"/>
+    <springProperty name="maxHistory" source="logback.rollingPolicy.maxHistory.days" defaultValue="2"/>
+    <springProperty name="totalSizeCap" source="logback.rollingPolicy.totalSizeCap.gb" defaultValue="10GB"/>
+
+    <conversionRule conversionWord="ccpmdc" converterClass="ccp.shared.springutils.logging.mdc.WPPMDCConverter" />
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <appender name="TIME_BASED_ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <file>${LOG_FILE}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most maxFileSize, keep maxHistory days worth of history, but at most totalSizeCap -->
+            <maxFileSize>${maxFileSize}</maxFileSize>
+            <maxHistory>${maxHistory}</maxHistory>
+            <totalSizeCap>${totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TIME_BASED_ROLLING_FILE"/>
+    </root>
+</configuration>
